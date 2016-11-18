@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "http://www.w3.org/tr/xhtml11/Dtd/xhtml11.dtd">
+<html xmlns:xhtml="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<style>
+        body
+        {
+        margin:  0px 0px 20px 0px;
+        font-family:Verdana,Arial,Helvetica;
+        font-size: 70%;
+        }
+        table
+        {
+        caption-side: top;
+        border-width: 1px;
+        border-color: #000000;
+        border-style: solid;
+        border-collapse: collapse;
+        width: 95%;
+        margin:  0px 15px 0px 20px;
+        font-size: 100%;
+        }
+
+        .table-caption
+        {
+        background-color: #f6f6ff;
+        color: black;
+        font-weight: bold;
+        text-align: top;
+        }
+
+        td
+        {
+        border-width: 1px;
+        border-color: #dddddd;
+        border-style: solid;
+        padding: 0px 2px 0x 2px;
+        }
+
+        .bold
+        {
+        font-weight: bold;
+        }
+
+        .section-title
+        {
+        font-size: 150%;
+        font-weight: bold;
+        margin: 15px 0px 10px 0px;
+        padding: 0px 5px 0px 10px;
+        }
+
+        .subsection-title
+        {
+        font-weight: bold;
+        margin: 15px 0px 10px 0px;
+        padding: 0px 5px 0px 10px;
+        }
+
+        p, h3
+        {
+        margin: 15px 0px 10px 0px;
+        padding: 0px 5px 0px 10px;
+        }
+
+      </style>
+	  </head>
+	  <body>
+	  <h1>{{ database.name }}</h1>
+	  <p><i>{{ database. description }}<br>178.75 MB</i></p>
+	  <p class="section-title">Summary</p>
+	  <ul><li><a href="#Tables">Tables</a> {{ len(database.tables) }}
+              <ul>
+			  {% for table in database.tables %}
+				<li><a href="#TABLE.{{ table.name }}">{{ table.name }}</a></li>
+			  {% endfor %}
+			  </ul>
+	  </li></ul>
+
+
+     <p class="section-title" id="TABLES">Tables</p>
+	 {% for table in database.tables %}
+          <h3 id="TABLE.{{ table.name }}">Table: {{ table.name }}</h3>
+		  <i><table_description>{{ table.description }}</table_description></i>
+
+		  <p><b>Fields</b></p>
+		  <table><tbody>
+		  <tr>
+		  <td class="table-caption" width="150px">Column</td>
+		  <td class="table-caption" width="150px">Type</td>
+		  <td class="table-caption" width="150px">Nullable</td>
+		  <td class="table-caption" width="150px">Description</td>
+		  </tr>
+
+		  {% for column in table.columns %}
+		  <tr>
+		  <td width="150px">{{ column.name }}</td>
+		  <td width="100px">{{ column.type }}</td>
+		  <td width="50px">{{ column.nullable }}</td>
+		  <td width="*">{{ column.description }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody></table>
+	</body></html>
