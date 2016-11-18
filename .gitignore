@@ -60,3 +60,9 @@ target/
 
 # pyenv python configuration file
 .python-version
+
+.idea/misc.xml
+.idea/modules.xml
+.idea/sqldoc.iml
+.idea/vcs.xml
+.idea/workspace.xml
