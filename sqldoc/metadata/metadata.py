@@ -13,8 +13,8 @@ class Table:
 
 
 class Column:
-    def __init_(self, name, type, nullable, description):
+    def __init__(self, name, data_type, nullable, description):
         self.name = name
-        self.type = type
+        self.data_type = data_type
         self.nullable = nullable
         self.description = description
