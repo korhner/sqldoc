@@ -1,13 +1,12 @@
 {{ database.name }}
 {{ database. description }}
-
 {% for table in database.tables %}
-    {{ table.name }}
-    {{ table.description }}
-        {% for column in table.columns %}
-            {{ column.name }}
-            {{ column.type }}
-            {{ column.nullable }}
-            {{ column.description }}
-        {% endfor %}
+{{ table.name }}
+{{ table.description }}
+{% for column in table.columns %}
+{{ column.name }}
+{{ column.data_type }}
+{{ column.nullable }}
+{{ column.description }}
+{% endfor %}
 {% endfor %}
