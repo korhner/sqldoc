@@ -65,9 +65,9 @@
 	  </head>
 	  <body>
 	  <h1>{{ database.name }}</h1>
-	  <p><i>{{ database. description }}<br>178.75 MB</i></p>
+	  <p><i>{{ database. description }}</i></p>
 	  <p class="section-title">Summary</p>
-	  <ul><li><a href="#Tables">Tables</a> {{ len(database.tables) }}
+	  <ul><li><a href="#Tables">Tables</a> ({{ database.tables|length }})
               <ul>
 			  {% for table in database.tables %}
 				<li><a href="#TABLE.{{ table.name }}">{{ table.name }}</a></li>
@@ -99,4 +99,5 @@
 		  </tr>
 		  {% endfor %}
 		</tbody></table>
+	{% endfor %}
 	</body></html>
