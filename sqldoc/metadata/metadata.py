@@ -6,10 +6,11 @@ class Database:
 
 
 class Table:
-    def __init__(self, name, description, columns):
+    def __init__(self, name, description, columns, metadata):
         self.name = name
         self.description = description
         self.columns = columns
+        self.metadata = metadata
 
 
 class Column:
