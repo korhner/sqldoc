@@ -3,6 +3,7 @@ import os
 from sqldoc.parser.parser import Parser
 from sqldoc.metadata import metadata
 
+relevant_table_information = {'Location:', 'Owner:', 'CreateTime:'}
 
 def _get_tables(connection, database):
     cursor = connection.cursor()
@@ -22,7 +23,8 @@ def _parse_desc(desc):
         current_index = 2  # skip first two rows
         columns = []
         while desc[current_index] != ('', None, None):
-            columns.append(desc[current_index])
+            column_name, data_type, column_description = desc[current_index]
+            columns.append(metadata.Column(column_name, data_type, True, column_description))
             current_index += 1
         value_map['columns'] = columns
         while current_index < len(desc):
@@ -32,12 +34,15 @@ def _parse_desc(desc):
                 current_index += 3
                 partition_columns = []
                 while desc[current_index][0] != '':
-                    partition_columns.append(desc[current_index])
+                    column_name, data_type, column_description = desc[current_index]
+                    partition_columns.append(metadata.Column(column_name, data_type, True, column_description))
                     current_index += 1
                 value_map['partitions'] = partition_columns
             elif desc[current_index][0].startswith('# Detailed Table Information'):
                 current_index += 1
                 while desc[current_index][0] != '':
+                    if desc[current_index][0] not in relevant_table_information:
+                        continue
                     key, value, _ = desc[current_index]
                     value_map[key.strip()] = value.strip() if value is not None else None
                     current_index += 1
@@ -63,8 +68,6 @@ class ImpylaParser(Parser):
         tables = []
         for table_name in _get_tables(connection, self.database_name):
             desc = _parse_desc(_get_desc(connection, self.database_name, table_name))
-            columns = []
-            for column_name, data_type, column_description in desc.pop['columns']:
-                columns.append(metadata.Column(column_name, data_type, column_description))
+            columns = desc.pop['columns']
             tables.append(metadata.Table(table_name, None, columns, desc))
         return metadata.Database(self.database_name, None, tables)

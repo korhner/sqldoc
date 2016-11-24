@@ -1,5 +1,5 @@
 import os
-from pytest import fixture
+import pytest
 from sqldoc.renderer.jinjarenderer import jinjarenderer
 from sqldoc.metadata import metadata
 
@@ -18,7 +18,7 @@ def db_metadata():
     order_table = metadata.Table('order', None, order_columns)
     return metadata.Database('test_db', 'A test database.', [employee_table, order_table])
 
-@fixture
+@pytest.fixture
 def expected_output():
     return '''test_db
 A test database.
@@ -52,10 +52,10 @@ Id of the order.
 
 '''
 
+
 def test_output(tmpdir, db_metadata, expected_output):
     output_dir = str(tmpdir)
     renderer = jinjarenderer.JinjaRenderer(db_metadata, output_dir, 'simpletext')
     renderer.render()
     with open(os.path.join(output_dir, 'test_db.html'), 'r') as f:
         assert f.read() == expected_output
-
