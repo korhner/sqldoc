@@ -5,6 +5,7 @@ from sqldoc.metadata import metadata
 
 relevant_table_information = {'Location:', 'Owner:', 'CreateTime:'}
 
+
 def _get_tables(connection, database):
     cursor = connection.cursor()
     cursor.execute('show tables in {}'.format(database))

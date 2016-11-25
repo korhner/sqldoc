@@ -4,9 +4,11 @@ from sqldoc.parser.impylaparser.impylaparser import ImpylaParser
 from sqldoc.metadata import metadata
 from impala.dbapi import connect
 
+impala_env_var='IMPALA_URL'
+
 skip_impyla = pytest.mark.skipif(
-    pytest.config.getoption("--impala-url") is None,
-    reason='add --impala-url=<IMPALA-URL>:<IMPALA-PORT> option to execute impylaparser tests.'
+    os.environ.get(impala_env_var) is None,
+    reason='define {}=<IMPALA-URL>:<IMPALA-PORT> env variable to execute impylaparser tests.'.format(impala_env_var)
 )
 
 sql_dir = os.path.dirname(os.path.realpath(__file__))
@@ -16,14 +18,17 @@ db_destroy = os.path.join(sql_dir, 'sql/db_destroy.sql')
 
 @pytest.fixture
 def configuration():
-    host, port = pytest.config.getoption("--impala-url").split(':')
-    return {'host': host, 'port': port}
+    host, port = os.environ[impala_env_var].split(':')
+    return {'host': host, 'port': int(port)}
 
 
 def impyla_execute_file(connection, file_path):
     with open(file_path) as f:
-        cursor = connection.cursor()
-        cursor.execute(f.read())
+        for query in f.read().split(';'):
+            if not query.strip():
+                continue
+            cursor = connection.cursor()
+            cursor.execute(query)
 
 
 @pytest.yield_fixture
@@ -35,12 +40,14 @@ def prepare_db(configuration):
     impyla_execute_file(connection, db_destroy)
 
 
+@skip_impyla
 def test_empty_db(prepare_db, configuration):
     parser = ImpylaParser('sql_doc_empty', configuration)
     expected_metadata = metadata.Database('sql_doc_empty', None, [])
     assert expected_metadata == parser.build_database_metadata()
 
 
+@skip_impyla
 def test_full_db(prepare_db, configuration):
     parser = ImpylaParser('sql_doc_two_tables', configuration)
     expected_metadata = metadata.Database('sql_doc_empty', None, [
@@ -58,11 +65,11 @@ def test_full_db(prepare_db, configuration):
         ], {}),
     ])
 
-    metadata = parser.build_database_metadata()
+    parsed_metadata = parser.build_database_metadata()
 
     # leave only partition information for easier testing
     for table in metadata.tables:
         partitions = table.metadata.get('partitions')
         table.metadata = {} if partitions is None else {'partitions': partitions}
 
-    assert expected_metadata == metadata
+    assert expected_metadata == parsed_metadata

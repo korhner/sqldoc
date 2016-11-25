@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -26,11 +26,7 @@ setup(
     author="Ivan Korhner",
     author_email='korhner@gmail.com',
     url='https://github.com/korhner/sqldoc',
-    packages=[
-        'sqldoc',
-    ],
-    package_dir={'sqldoc':
-                 'sqldoc'},
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'sqldoc=sqldoc.cli:main'

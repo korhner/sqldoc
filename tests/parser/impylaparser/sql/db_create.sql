@@ -1,6 +1,6 @@
-CREATE DATABASE babe_raw LOCATION '/tmp/sql_doc_empty';
+CREATE DATABASE sql_doc_empty LOCATION '/tmp/sql_doc_empty';
 
-CREATE DATABASE babe_raw LOCATION '/tmp/sql_doc_two_tables';
+CREATE DATABASE sql_doc_two_tables LOCATION '/tmp/sql_doc_two_tables';
 
 CREATE TABLE sql_doc_two_tables.empty_partitioned_no_comments (
 	id INTEGER
