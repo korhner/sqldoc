@@ -44,32 +44,32 @@ def prepare_db(configuration):
 def test_empty_db(prepare_db, configuration):
     parser = ImpylaParser('sql_doc_empty', configuration)
     expected_metadata = metadata.Database('sql_doc_empty', None, [])
-    assert expected_metadata == parser.build_database_metadata()
+    assert str(expected_metadata) == str(parser.build_database_metadata())
 
 
 @skip_impyla
 def test_full_db(prepare_db, configuration):
-    parser = ImpylaParser('sql_doc_two_tables', configuration)
-    expected_metadata = metadata.Database('sql_doc_empty', None, [
-        metadata.Table('empty_partitioned_no_comments', None, [
-            metadata.Column('id', 'INTEGER', True, None)
-        ], {'partitions': [metadata.Column('p_id', 'INTEGER', True, None)]}),
+    parser = ImpylaParser('sql_doc_tables', configuration)
+    expected_metadata = metadata.Database('sql_doc_tables', None, [
+        metadata.Table('empty_not_partitioned_comments', 'A non partitioned table.', [
+            metadata.Column('id', 'INT', True, 'Id field.')
+        ], {}),
         metadata.Table('empty_not_partitioned_no_comments', None, [
-            metadata.Column('id', 'INTEGER', True, None)
+            metadata.Column('id', 'INT', True, None)
         ], {}),
         metadata.Table('empty_partitioned_comments', 'A partitioned table.', [
-            metadata.Column('id', 'INTEGER', True, 'Id field.')
-        ], {'partitions': [metadata.Column('p_id', 'INTEGER', True, 'Id of the partition.')]}),
-        metadata.Table('empty_not_partitioned_comments', 'A non partitioned table.', [
-            metadata.Column('id', 'INTEGER', True, 'Id field.')
-        ], {}),
+            metadata.Column('id', 'INT', True, 'Id field.')
+        ], {'partitions': [metadata.Column('p_id', 'INT', True, 'Id of the partition.')]}),
+        metadata.Table('empty_partitioned_no_comments', None, [
+            metadata.Column('id', 'INT', True, None)
+        ], {'partitions': [metadata.Column('p_id', 'INT', True, None)]})
     ])
 
     parsed_metadata = parser.build_database_metadata()
 
     # leave only partition information for easier testing
-    for table in metadata.tables:
+    for table in parsed_metadata.tables:
         partitions = table.metadata.get('partitions')
         table.metadata = {} if partitions is None else {'partitions': partitions}
 
-    assert expected_metadata == parsed_metadata
+    assert str(expected_metadata) == str(parsed_metadata)

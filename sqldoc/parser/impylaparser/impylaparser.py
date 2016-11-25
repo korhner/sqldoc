@@ -3,7 +3,7 @@ import os
 from sqldoc.parser.parser import Parser
 from sqldoc.metadata import metadata
 
-relevant_table_information = {'Location:', 'Owner:', 'CreateTime:'}
+relevant_table_information = {'Location:', 'Owner:', 'CreateTime:', 'comment'}
 
 
 def _get_tables(connection, database):
@@ -42,10 +42,16 @@ def _parse_desc(desc):
             elif desc[current_index][0].startswith('# Detailed Table Information'):
                 current_index += 1
                 while desc[current_index][0] != '':
-                    if desc[current_index][0] not in relevant_table_information:
-                        continue
-                    key, value, _ = desc[current_index]
-                    value_map[key.strip()] = value.strip() if value is not None else None
+                    if desc[current_index][0].strip() in relevant_table_information:
+                        key, value, _ = desc[current_index]
+                        value_map[key.strip()] = value.strip() if value is not None else None
+                    elif desc[current_index][0].startswith('Table Parameters:'):
+                        current_index += 1
+                        while desc[current_index] != ('', None, None):
+                            _, key, value = desc[current_index]
+                            if key.strip() in relevant_table_information:
+                                value_map[key.strip()] = value.strip()
+                            current_index += 1
                     current_index += 1
             else:
                 current_index += 1
@@ -69,6 +75,7 @@ class ImpylaParser(Parser):
         tables = []
         for table_name in _get_tables(connection, self.database_name):
             desc = _parse_desc(_get_desc(connection, self.database_name, table_name))
-            columns = desc.pop['columns']
-            tables.append(metadata.Table(table_name, None, columns, desc))
+            columns = desc.pop('columns')
+            description = desc.pop('comment', None)
+            tables.append(metadata.Table(table_name, description, columns, desc))
         return metadata.Database(self.database_name, None, tables)
