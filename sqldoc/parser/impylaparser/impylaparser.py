@@ -61,8 +61,8 @@ def _parse_desc(desc):
 
 
 class ImpylaParser(Parser):
-    def __init__(self, database_name, configuration):
-        super().__init__(database_name, configuration)
+    def __init__(self, configuration):
+        super().__init__(configuration)
 
     def connection(self):
         return connect(host=self.configuration['host'], port=self.configuration['port'])
@@ -70,12 +70,12 @@ class ImpylaParser(Parser):
     def validate_configuration(self):
         pass
 
-    def build_database_metadata(self):
+    def build_database_metadata(self, database_name):
         connection = self.connection()
         tables = []
-        for table_name in _get_tables(connection, self.database_name):
-            desc = _parse_desc(_get_desc(connection, self.database_name, table_name))
+        for table_name in _get_tables(connection, database_name):
+            desc = _parse_desc(_get_desc(connection, database_name, table_name))
             columns = desc.pop('columns')
             description = desc.pop('comment', None)
             tables.append(metadata.Table(table_name, description, columns, desc))
-        return metadata.Database(self.database_name, None, tables)
+        return metadata.Database(database_name, None, tables)

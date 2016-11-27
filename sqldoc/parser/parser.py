@@ -2,8 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 class Parser(metaclass=ABCMeta):
 
-    def __init__(self, database_name, configuration):
-        self.database_name = database_name
+    def __init__(self, configuration):
         self.configuration = configuration
         self.validate_configuration()
         pass
@@ -13,5 +12,5 @@ class Parser(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def build_database_metadata(self):
+    def build_database_metadata(self, database_name):
         pass

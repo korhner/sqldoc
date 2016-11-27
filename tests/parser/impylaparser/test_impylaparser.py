@@ -21,6 +21,9 @@ def configuration():
     host, port = os.environ[impala_env_var].split(':')
     return {'host': host, 'port': int(port)}
 
+@pytest.fixture:
+def parser(configuration):
+    return ImpylaParser(configuration)
 
 def impyla_execute_file(connection, file_path):
     with open(file_path) as f:
@@ -41,15 +44,13 @@ def prepare_db(configuration):
 
 
 @skip_impyla
-def test_empty_db(prepare_db, configuration):
-    parser = ImpylaParser('sql_doc_empty', configuration)
+def test_empty_db(prepare_db, parser):
     expected_metadata = metadata.Database('sql_doc_empty', None, [])
-    assert str(expected_metadata) == str(parser.build_database_metadata())
+    assert str(expected_metadata) == str(parser.build_database_metadata('sql_doc_empty'))
 
 
 @skip_impyla
-def test_full_db(prepare_db, configuration):
-    parser = ImpylaParser('sql_doc_tables', configuration)
+def test_full_db(prepare_db, parser):
     expected_metadata = metadata.Database('sql_doc_tables', None, [
         metadata.Table('empty_not_partitioned_comments', 'A non partitioned table.', [
             metadata.Column('id', 'INT', True, 'Id field.')
@@ -65,7 +66,7 @@ def test_full_db(prepare_db, configuration):
         ], {'partitions': [metadata.Column('p_id', 'INT', True, None)]})
     ])
 
-    parsed_metadata = parser.build_database_metadata()
+    parsed_metadata = parser.build_database_metadata('sql_doc_tables')
 
     # leave only partition information for easier testing
     for table in parsed_metadata.tables:
