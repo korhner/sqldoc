@@ -18,7 +18,8 @@ class Driver:
     def get_desc(self, database, table):
         cursor = self.connection.cursor()
         cursor.execute("describe formatted {database}.{table}".format(database=database, table=table))
-        return cursor.fetchall()
+        result = cursor.fetchall()
+        return result
 
     def parse_desc(self, desc):
         value_map = {}
