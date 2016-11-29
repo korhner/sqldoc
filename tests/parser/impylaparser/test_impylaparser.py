@@ -21,9 +21,11 @@ def configuration():
     host, port = os.environ[impala_env_var].split(':')
     return {'host': host, 'port': int(port)}
 
-@pytest.fixture:
+
+@pytest.fixture
 def parser(configuration):
     return ImpylaParser(configuration)
+
 
 def impyla_execute_file(connection, file_path):
     with open(file_path) as f:
