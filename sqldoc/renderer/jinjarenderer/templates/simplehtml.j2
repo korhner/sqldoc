@@ -64,12 +64,12 @@
       </style>
 	  </head>
 	  <body>
-	  <h1>{{ database.name }}</h1>
-	  <p><i>{{ database. description }}</i></p>
+	  <h1>{{ databases[0].name }}</h1>
+	  <p><i>{{ databases[0]. description }}</i></p>
 	  <p class="section-title">Summary</p>
-	  <ul><li><a href="#Tables">Tables</a> ({{ database.tables|length }})
+	  <ul><li><a href="#Tables">Tables</a> ({{ databases[0].tables|length }})
               <ul>
-			  {% for table in database.tables %}
+			  {% for table in databases[0].tables %}
 				<li><a href="#TABLE.{{ table.name }}">{{ table.name }}</a></li>
 			  {% endfor %}
 			  </ul>
@@ -77,7 +77,7 @@
 
 
      <p class="section-title" id="TABLES">Tables</p>
-	 {% for table in database.tables %}
+	 {% for table in databases[0].tables %}
           <h3 id="TABLE.{{ table.name }}">Table: {{ table.name }}</h3>
 		  <i><table_description>{{ table.description }}</table_description></i>
 

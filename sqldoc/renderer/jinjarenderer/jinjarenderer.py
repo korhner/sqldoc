@@ -6,12 +6,18 @@ default_template_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 
 
 class JinjaRenderer(Renderer):
-    def __init__(self, template_name, template_path=default_template_dir):
-        super().__init__()
-        self.template = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path)).get_template(template_name
-                                                                                                       + '.j2')
+    def __init__(self, configuration):
+        super().__init__(configuration)
+        self.template = jinja2.Environment(loader=jinja2.FileSystemLoader(self.configuration['template_path']))\
+            .get_template(self.configuration['template_name'])
 
-    def render(self, database, output_dir):
-        result = self.template.render(database=database)
-        with open(os.path.join(output_dir, database.name + '.html'), "w") as f:
-            f.write(result)
+    def validate_configuration(self):
+        default_values = {
+            'template_path': default_template_dir
+        }
+        default_values.update(self.configuration)
+        self.configuration = default_values
+
+    def render(self, databases, output_file):
+        result = self.template.render(databases=databases)
+        output_file.write(result)
