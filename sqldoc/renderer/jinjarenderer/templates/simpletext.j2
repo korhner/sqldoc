@@ -1,0 +1,12 @@
+{{ databases[0].name }}
+{{ databases[0].description }}
+{% for table in databases[0].tables %}
+{{ table.name }}
+{{ table.description }}
+{% for column in table.columns %}
+{{ column.name }}
+{{ column.data_type }}
+{{ column.nullable }}
+{{ column.description }}
+{% endfor %}
+{% endfor %}

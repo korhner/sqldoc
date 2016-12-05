@@ -7,7 +7,7 @@ test_sqldoc
 
 Tests for `sqldoc` module.
 """
-
+import sqldoc
 import pytest
 
 from contextlib import contextmanager
