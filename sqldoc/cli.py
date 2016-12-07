@@ -3,20 +3,33 @@
 import click
 from sqldoc.config import config
 import importlib
+from pkg_resources import iter_entry_points
+from sqldoc.parser.parser import Parser
+from sqldoc.renderer.renderer import Renderer
+from sqldoc.renderer.jinjarenderer.jinjarenderer import JinjaRenderer
 
 
-def load_class(full_class_string):
-    """
-    dynamically load a class from a string
-    """
+def build_parser_map():
+    return {}
 
-    class_data = full_class_string.split(".")
-    module_path = ".".join(class_data[:-1])
-    class_str = class_data[-1]
+def build_renderer_map():
+    return {'jinjarenderer': JinjaRenderer}
 
-    module = importlib.import_module(module_path)
-    # Finally, we retrieve the Class
-    return getattr(module, class_str)
+def add_if_not_exists(map, name, plugin):
+    if name in map:
+        raise Exception('Conflict with plugin: {name} '.format(name=name))
+    map[name] = plugin
+
+def load_plugins(parser_map, renderer_map):
+    for entry_point in iter_entry_points(group='sqldoc_component', name=None):
+        plugin_name = entry_point.name
+        plugin_class = entry_point.load()
+        if issubclass(plugin_class, Parser):
+            add_if_not_exists(parser_map, plugin_name, plugin_class)
+        elif issubclass(plugin_class, Renderer):
+            add_if_not_exists(renderer_map, plugin_name, plugin_class)
+        else:
+            raise Exception("Plugin {name} is neither a parser or render!".format(name=plugin_name))
 
 
 @click.group()
@@ -30,10 +43,14 @@ def main():
 def render(config_file, output_file):
     """Console script for sqldoc"""
     # load job
+    parser_map = build_parser_map()
+    renderer_map = build_renderer_map()
+    load_plugins(parser_map, renderer_map)
+
     job = config.load(config_file)
-    parser_class = load_class(job.parser.class_path)
+    parser_class = parser_map[job.parser.name]
     parser = parser_class(job.parser.config)
-    renderer_class = load_class(job.renderer.class_path)
+    renderer_class = renderer_map(job.renderer.name)
     renderer = renderer_class(job.renderer.config)
 
     databases = [parser.build_database_metadata(database) for database in job.databases]
