@@ -3,33 +3,7 @@
 import click
 from sqldoc.config import config
 import importlib
-from pkg_resources import iter_entry_points
-from sqldoc.parser.parser import Parser
-from sqldoc.renderer.renderer import Renderer
-from sqldoc.renderer.jinjarenderer.jinjarenderer import JinjaRenderer
-
-
-def build_parser_map():
-    return {}
-
-def build_renderer_map():
-    return {'jinjarenderer': JinjaRenderer}
-
-def add_if_not_exists(map, name, plugin):
-    if name in map:
-        raise Exception('Conflict with plugin: {name} '.format(name=name))
-    map[name] = plugin
-
-def load_plugins(parser_map, renderer_map):
-    for entry_point in iter_entry_points(group='sqldoc_component', name=None):
-        plugin_name = entry_point.name
-        plugin_class = entry_point.load()
-        if issubclass(plugin_class, Parser):
-            add_if_not_exists(parser_map, plugin_name, plugin_class)
-        elif issubclass(plugin_class, Renderer):
-            add_if_not_exists(renderer_map, plugin_name, plugin_class)
-        else:
-            raise Exception("Plugin {name} is neither a parser or render!".format(name=plugin_name))
+from sqldoc import sqldoc
 
 
 @click.group()
@@ -37,16 +11,27 @@ def main():
     pass
 
 
+def build_plugin_maps():
+    parser_map = sqldoc.build_parser_map()
+    renderer_map = sqldoc.build_renderer_map()
+    sqldoc.register_plugins(parser_map, renderer_map, sqldoc.load_plugins())
+    return parser_map, renderer_map
+
+
+def print_plugins(title, plugins):
+    click.echo(title)
+    for plugin in plugins:
+        click.echo('\t- {plugin}'.format(plugin=plugin))
+
+
 @main.command()
 @click.argument('config_file', type=click.File())
 @click.argument('output_file', type=click.File('w'))
 def render(config_file, output_file):
     """Console script for sqldoc"""
-    # load job
-    parser_map = build_parser_map()
-    renderer_map = build_renderer_map()
-    load_plugins(parser_map, renderer_map)
+    parser_map, renderer_map = build_plugin_maps()
 
+    # load job
     job = config.load(config_file)
     parser_class = parser_map[job.parser.name]
     parser = parser_class(job.parser.config)
@@ -61,3 +46,10 @@ def render(config_file, output_file):
 @click.argument('output_file', type=click.File('w'))
 def generate_config(output_file):
     config.generate_template(output_file)
+
+
+@main.command()
+def plugins():
+    parser_map, renderer_map = build_plugin_maps()
+    print_plugins("Parser plugins:", parser_map)
+    print_plugins("Renderer plugins:", renderer_map)
