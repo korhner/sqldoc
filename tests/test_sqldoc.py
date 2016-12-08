@@ -30,6 +30,9 @@ class Plugin:
         self.cls = cls
 
     def load(self):
+        return self.get_component
+
+    def get_component(self):
         return self.cls
 
 
