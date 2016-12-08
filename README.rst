@@ -18,7 +18,7 @@ sqldoc
      :alt: Updates
 
 
-Tool from generating database HTML documentation.
+Tool for generating database HTML documentation.
 
 
 * Free software: MIT license
