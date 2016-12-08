@@ -35,7 +35,7 @@ def render(config_file, output_file):
     job = config.load(config_file)
     parser_class = parser_map[job.parser.name]
     parser = parser_class(job.parser.config)
-    renderer_class = renderer_map(job.renderer.name)
+    renderer_class = renderer_map[job.renderer.name]
     renderer = renderer_class(job.renderer.config)
 
     databases = [parser.build_database_metadata(database) for database in job.databases]

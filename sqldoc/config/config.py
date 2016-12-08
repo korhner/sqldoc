@@ -16,8 +16,8 @@ class Parser(yaml.YAMLObject):
     yaml_loader = yaml.SafeLoader
     yaml_tag = u'!Parser'
 
-    def __init__(self, class_path, config):
-        self.class_path = class_path
+    def __init__(self, name, config):
+        self.name = name
         self.config = config
 
 
@@ -25,8 +25,8 @@ class Renderer(yaml.YAMLObject):
     yaml_loader = yaml.SafeLoader
     yaml_tag = u'!Renderer'
 
-    def __init__(self, class_path, config):
-        self.class_path = class_path
+    def __init__(self, name, config):
+        self.name = name
         self.config = config
 
 

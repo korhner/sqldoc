@@ -31,7 +31,7 @@ def add_if_not_exists(map, name, plugin):
 def register_plugins(parser_map, renderer_map, plugins):
     for plugin in plugins:
         plugin_name = plugin.name
-        plugin_class = plugin.load()
+        plugin_class = plugin.load()()
         if issubclass(plugin_class, Parser):
             add_if_not_exists(parser_map, plugin_name, plugin_class)
         elif issubclass(plugin_class, Renderer):
