@@ -56,8 +56,9 @@ Id of the order.
 
 
 def test_output(tmpdir, db_metadata, expected_output):
-    output_dir = str(tmpdir)
+    output_path = os.path.join(str(tmpdir), 'output.html')
     renderer = jinjarenderer.JinjaRenderer({'template_name': 'simpletext.j2'})
-    with open(os.path.join(output_dir, 'rw')) as output_file:
+    with open(output_path, 'w') as output_file:
         renderer.render([db_metadata], output_file)
+    with open(output_path, 'r') as output_file:
         assert output_file.read() == expected_output
