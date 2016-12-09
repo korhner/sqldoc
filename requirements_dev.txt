@@ -1,5 +1,8 @@
-pytest==2.9.2
-pytest-mock
 Jinja2==2.8
 click
 pyyaml
+pytest-pep8
+pytest-cov
+pytest-mock
+pytest
+coverage
