@@ -2,7 +2,6 @@
 
 import click
 from sqldoc.config import config
-import importlib
 from sqldoc import sqldoc
 
 
