@@ -25,3 +25,5 @@ deploy:
     tags: true
     repo: korhner/sqldoc
     condition: $TOXENV == py34
+after_success:
+  - coveralls
