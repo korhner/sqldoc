@@ -17,7 +17,9 @@ sqldoc
      :target: https://pyup.io/repos/github/korhner/sqldoc/
      :alt: Updates
 
-[![Coverage Status](https://coveralls.io/repos/github/korhner/sqldoc/badge.svg)](https://coveralls.io/github/korhner/sqldoc)
+.. image:: https://coveralls.io/repos/github/korhner/sqldoc/badge.svg
+     :target: https://coveralls.io/github/korhner/sqldoc
+     :alt: Coverage Status
 
 Tool for generating database HTML documentation.
 
